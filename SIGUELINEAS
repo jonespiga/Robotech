@@ -1,0 +1,178 @@
+#include <Servo.h>
+
+#define pinLeftWheel            8
+#define pinRightWheel           9
+#define pinSensorIRLeft         2   /*   Left infrared sensor     */
+#define pinSensorIRRight        3   /*   Right infrared sensor    */
+
+/* Define the posible states of the state machine of the program */
+#define MANUAL_CONTROL_STATE    0
+#define LINE_FOLLOWER           1
+
+/* Bauderate of the Bluetooth*/
+#define BQ_ZUM_BLUETOOTH                       19200
+
+/* Definition of the values that can take continuous rotation servo,
+ that is, the wheels */
+#define wheelStopValue            90
+#define leftWheelFordwardValue    0
+#define leftWheelBackwardsValue   180
+#define rightWheelFordwardValue   180
+#define rightWheelBackwardsValue  0
+
+/* Size of the received data buffer */
+#define bufferSize 1
+
+/* Default delay */
+#define defaultDelay        10
+
+/* Variable that controls the current state of the program */
+int currentState;
+
+/* A object from the Servo class is created for each servo */
+Servo leftWheel;                       /*  Values from 0 to 180  */
+Servo rightWheel;                      /*  Values from 0 to 180  */
+
+/* Variables of the line follower mode */
+int rightIR;
+int leftIR;
+int BLACK = 0;
+int WHITE = 1;
+
+/*  A char buffer to storage the received data from the Bluetooth
+    Serial */
+char dataBuffer[bufferSize];
+
+/* Buffer iterator */
+int i = 0;
+
+/* Number of characters availables in the Serial */
+int numChar = 0;
+
+
+/******************************************************************
+ *                     Definition of functions                    *
+ ******************************************************************/
+
+void parar() {
+  leftWheel.write(wheelStopValue);
+  delay(defaultDelay);
+
+  rightWheel.write(wheelStopValue);
+  delay(defaultDelay);
+}
+
+void adelante() {
+  leftWheel.write(leftWheelFordwardValue);
+  delay(defaultDelay);
+
+  rightWheel.write(rightWheelFordwardValue);
+  delay(defaultDelay);
+}
+
+void atras() {
+  leftWheel.write(leftWheelBackwardsValue);
+  delay(defaultDelay);
+
+  rightWheel.write(rightWheelBackwardsValue);
+  delay(defaultDelay);
+}
+
+void izquierda() {
+  leftWheel.write(wheelStopValue);
+  delay(defaultDelay);
+
+  rightWheel.write(rightWheelFordwardValue);
+  delay(defaultDelay);
+}
+
+void derecha() {
+  leftWheel.write(leftWheelFordwardValue);
+  delay(defaultDelay);
+
+  rightWheel.write(wheelStopValue);
+  delay(defaultDelay);
+}
+
+
+void seg()
+{
+  leftWheel.write(leftWheelFordwardValue);
+  delay(defaultDelay);
+
+  rightWheel.write(wheelStopValue);
+  delay(defaultDelay);
+
+    leftWheel.write(wheelStopValue);
+  delay(defaultDelay);
+
+  rightWheel.write(rightWheelFordwardValue);
+  delay(defaultDelay);
+}
+
+/*
+  Perform the action required by the user of the Android app
+*/
+
+
+void followTheLine() {
+  /* Read the state of the sensors */
+  rightIR = digitalRead(pinSensorIRLeft);
+  leftIR = digitalRead(pinSensorIRRight);
+
+
+  if (rightIR == BLACK && leftIR == BLACK) {
+    adelante();
+  }  
+  else if(rightIR == BLACK && leftIR == WHITE){
+    derecha();
+  }
+  else if(rightIR == WHITE && leftIR == BLACK){
+    izquierda();
+  }
+  else
+  {
+    derecha();
+  }
+ 
+}
+
+
+
+
+/******************************************************************
+ *                             Setup                              *
+ ******************************************************************/
+
+void setup(){
+ 
+  /* Open the Bluetooth Serial and empty it */
+  //Serial.begin(BQ_ZUM_BLUETOOTH);  
+  Serial.begin(9600);
+  Serial.flush();    
+ 
+  /* Define the appropiate pin to each object */
+  leftWheel.attach(pinLeftWheel);
+  rightWheel.attach(pinRightWheel);
+
+  /* The robot is stopped at the beginning */
+  parar();
+
+  /* Put the IR sensors as input */
+  pinMode(pinSensorIRLeft, INPUT);
+  pinMode(pinSensorIRRight, INPUT);
+
+  /* Default state is manual control */
+  currentState = MANUAL_CONTROL_STATE;
+}
+
+
+/******************************************************************
+ *                       Main program loop                        *
+ ******************************************************************/
+
+void loop() {
+ 
+    followTheLine();
+
+}
