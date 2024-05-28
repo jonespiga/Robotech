@@ -1,0 +1,96 @@
+#include <Servo.h>
+ 
+Servo ruedaIzq;
+Servo ruedaDrh;
+Servo brazoIzq;
+Servo brazoDrh;
+Servo pieIzq;
+Servo pieDrh;
+
+void setup() {
+  pieIzq.attach(4);
+  pieDrh.attach(3);
+  ruedaIzq.attach(5);
+  ruedaDrh.attach(2);
+  brazoIzq.attach(6);
+  brazoDrh.attach(7);
+  Serial.begin(9600);
+}
+
+
+void levantar(){
+
+  pieIzq.write(0);
+  pieDrh.write(180);
+}
+
+
+void bajar(){
+
+  pieIzq.write(150);
+  pieDrh.write(25);
+}
+
+
+void adelante(){
+
+  ruedaIzq.write(180);
+  ruedaDrh.write(0);
+}
+
+
+void atras(){
+
+  ruedaIzq.write(0);
+  ruedaDrh.write(360);
+}
+
+
+void derecha(){
+
+  ruedaDrh.write(0);
+}
+
+
+void izquierda(){
+
+  ruedaIzq.write(180);
+}
+
+
+void golpear(){
+
+brazoIzq.write(0);
+brazoDrh.write(150);
+delay(100);
+brazoIzq.write(180);
+brazoDrh.write(0);
+delay(100);
+brazoIzq.write(0);
+brazoDrh.write(150);
+delay(100);
+brazoIzq.write(180);
+brazoDrh.write(0);
+delay(100);
+brazoIzq.write(0);
+brazoDrh.write(150);
+delay(100);
+brazoIzq.write(180);
+brazoDrh.write(0);
+delay(100);
+}
+
+
+
+void loop(){
+
+//levantar();
+//bajar();
+//adelante();
+//atras();
+//izquierda();
+//derecha();
+golpear();
+//parar();
+
+}
